@@ -13,16 +13,24 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        if(\request()->has('name')){
-            $users = User::where('name', "like", "%". \request()->get('name'). "%")->paginate(10);
-        } else {
-            $users = User::orderBy('id', 'DESC')->paginate(10);
+        $users = (new User)->newQuery();
+
+        if($request->exists('name')){
+            $users->where('name', "LIKE", "%". $request->name . "%");
         }
 
-        return response()->json($users, 200);
+        if($request->exists('email')){
+            $users->where('email', "LIKE", "%". $request->email . "%");
+        }
+
+        $users->orderBy('id', 'DESC');
+
+        $data = $users->paginate(10);
+
+        return response()->json($data, 200);
     }
 
     /**
