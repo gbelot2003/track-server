@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
+use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -64,6 +65,17 @@ class LoginTest extends TestCase
         $this->json('POST', 'api/v1/register', $body, ['Accept' => 'application/json'])
             ->assertStatus(200);
         $this->assertDatabaseHas('users', ['email' => 'gbelot@tester.com']);
+    }
+
+    /** @test */
+    public function user_logout()
+    {
+        Passport::actingAs(
+            $user = factory(User::class)->create()
+        );
+
+        $response = $this->post('api/v1/logout', [])
+            ->assertStatus(200);
     }
 
 }

@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Login function
+     *
+     * @param Request $request
+     * @return void
+     *
+     * api/v1/login
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -40,6 +48,14 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Register function
+     *
+     * @param Request $request
+     * @return void
+     *
+     * api/v1/register
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -57,7 +73,27 @@ class AuthController extends Controller
         return response()->json($user, 200);
     }
 
+    /**
+     * User function
+     *
+     * @param Request $request
+     * @return void
+     *
+     * api/v1/user
+     */
+    public function user(Request $request)
+    {
+        return $request->user();
+    }
 
+
+    /**
+     * Logout function
+     *
+     * @return void
+     *
+     * api/v1/logout
+     */
     public function logout()
     {
         auth()->user()->tokens->each(function ($token, $key) {
