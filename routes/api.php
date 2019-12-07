@@ -18,9 +18,10 @@ use Illuminate\Http\Request;
  */
 Route::post('v1/login', 'Auth\AuthController@login');
 Route::post('v1/register', 'Auth\AuthController@register');
-Route::middleware('auth:api')->get('v1/user', 'Auth\AuthController@user');
+Route::middleware('auth:api')->get('v1/user', 'Auth\AuthController@user')->name('user');
 Route::middleware('auth:api')->post('v1/logout', 'Auth\AuthController@logout');
 
+Route::middleware('auth:api')->resource('v1/users', 'Api\UserController');
 
 
 
