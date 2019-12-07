@@ -9,11 +9,4 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LoginTest extends TestCase
 {
-    use WithFaker, RefreshDatabase;
-
-    public function setUp() : void
-    {
-        parent::setUp();
-        \Artisa::call('passport:install', ['-vvv' => true]);
-    }
 }
