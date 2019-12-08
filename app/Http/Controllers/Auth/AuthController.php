@@ -5,12 +5,21 @@ namespace App\Http\Controllers\Auth;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Events\BlockAttempsUsers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller
 {
+    use AuthenticatesUsers;
+
+    /**
+     * @var int
+     */
+    protected $maxAttempts = 3; // Default is 5
+
     /**
      * Login function
      *
@@ -28,6 +37,20 @@ class AuthController extends Controller
         ]);
 
         $credentials = request(['email', 'password']);
+
+        if ($this->hasTooManyLoginAttempts($request)) {
+            // aqui cerramos al usuario permanentemente
+            dd("test");
+            event(new BlockAttempsUsers($request));
+        }
+
+        // Esto no deberia estar aquì pero lo dejamos por conveniencia
+        $checkStatus = User::where('email', $request->email)->first();
+        if ($checkStatus->status == false) {
+            return \response()->json('La Cuenta esta bloqueada, solicite procedimiento de desbloqueo al administrador del sistema', 401);
+        }
+
+
 
         if (!Auth::attempt($credentials))
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -68,6 +91,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'status' => false,
         ]);
 
         return response()->json($user, 200);
