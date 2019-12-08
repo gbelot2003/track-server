@@ -60,7 +60,7 @@ class UserControllerTest extends TestCase
         $name = $this->itemUser->name;
 
         // Primer parametro de nombre
-        $response = $this->json('GET', "api/v1/users?name=$name");
+        $response = $this->json('GET', "api/v1/users");
 
         $response->assertStatus(403);
     }
@@ -76,7 +76,7 @@ class UserControllerTest extends TestCase
         $name = $this->itemUser->name;
 
         // Primer parametro de nombre
-        $response = $this->json('GET', "api/v1/users?name=$name");
+        $response = $this->json('GET', "api/v1/users");
 
         $response->assertStatus(401);
     }
