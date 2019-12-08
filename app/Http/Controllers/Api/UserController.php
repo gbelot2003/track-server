@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\User;
+use App\Filters\UserFilters;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\User;
 
 class UserController extends Controller
 {
@@ -19,24 +20,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(UserFilters $filters)
     {
+        $users = User::filter($filters)->orderBy('id', 'DESC')->paginate();
 
-        $users = (new User)->newQuery();
-
-        if($request->exists('name')){
-            $users->where('name', "LIKE", "%". $request->name . "%");
-        }
-
-        if($request->exists('email')){
-            $users->where('email', "LIKE", "%". $request->email . "%");
-        }
-
-        $users->orderBy('id', 'DESC');
-
-        $data = $users->paginate(10);
-
-        return response()->json($data, 200);
+        return response()->json($users, 200);
     }
 
     /**

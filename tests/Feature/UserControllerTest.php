@@ -35,8 +35,11 @@ class UserControllerTest extends TestCase
 
         factory(User::class, 30)->create();
 
-        factory(User::class, 1)->create(['name' => 'gerard', 'email' => 'anoy01@anon.com']);
-        factory(User::class, 1)->create(['name' => 'vale', 'email' => 'anoy02@anon.com']);
+        factory(User::class, 1)->create(
+            ['name' => 'gerard', 'email' => 'anoy01@anon.com']);
+
+        factory(User::class, 1)->create(
+            ['name' => 'vale', 'email' => 'anoy02@anon.com', 'status' => false]);
 
         $this->firstUser = User::findOrFail(1);
         $this->firstUser->assignRole('Administrador');
@@ -55,6 +58,8 @@ class UserControllerTest extends TestCase
     /** @test */
     public function no_user_can_enter_index_without_permissions()
     {
+        //$this->withExceptionHandling();
+
         Passport::actingAs($this->lastUser);
 
         $name = $this->itemUser->name;
@@ -133,5 +138,24 @@ class UserControllerTest extends TestCase
         $responseArray = json_decode($response->getContent());
 
         $this->assertEquals(2, $responseArray->total);
+    }
+
+    /** @test */
+    public function index_filter_by_status()
+    {
+        Passport::actingAs($this->firstUser);
+
+        // Buscamos todas las coincidencias, el resultado es 1
+        $response = $this->json('get', "api/v1/users?status");
+
+        $response->assertStatus(200);
+
+        // Solo este usuario tiene el status false
+        $response->assertSee('anoy02@anon.com');
+
+        $responseArray = json_decode($response->getContent());
+
+        $this->assertEquals(1, $responseArray->total);
+
     }
 }
