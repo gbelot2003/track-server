@@ -28,27 +28,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -56,18 +35,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $user = User::where('id', $id)->with('roles')->first();
+        return response()->json($user, 200);
     }
 
     /**
@@ -79,7 +48,23 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'string|required',
+            'email' => 'required|email'
+        ]);
+
+        if ($request->input('password')):
+            $request['password'] = bcrypt($request->input('password'));
+            unset($request['password_confirmation']);
+        else:
+            unset($request['password']);
+            unset($request['password_confirmation']);
+        endif;
+
+        $user = User::findOrFail($id);
+        $user->update($request->all());
+
+        return response()->json($user, 200);
     }
 
     /**
